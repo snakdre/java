@@ -30,9 +30,6 @@ function Invoke-GitPushWithAnimation {
     $frames = @("|", "/", "-", "\")
     $index = 0
     $percent = 0
-    $stdoutBuilder = New-Object System.Text.StringBuilder
-    $stderrBuilder = New-Object System.Text.StringBuilder
-
     $startInfo = New-Object System.Diagnostics.ProcessStartInfo
     $startInfo.FileName = "git"
     $startInfo.Arguments = "push --progress $Remote $TargetBranch"
@@ -44,23 +41,9 @@ function Invoke-GitPushWithAnimation {
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo = $startInfo
 
-    $process.add_OutputDataReceived({
-        param($sender, $e)
-        if ($null -ne $e.Data) {
-            [void]$stdoutBuilder.AppendLine($e.Data)
-        }
-    })
-
-    $process.add_ErrorDataReceived({
-        param($sender, $e)
-        if ($null -ne $e.Data) {
-            [void]$stderrBuilder.AppendLine($e.Data)
-        }
-    })
-
     [void]$process.Start()
-    $process.BeginOutputReadLine()
-    $process.BeginErrorReadLine()
+    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+    $stderrTask = $process.StandardError.ReadToEndAsync()
 
     while (-not $process.HasExited) {
         $frame = $frames[$index % $frames.Count]
@@ -73,8 +56,8 @@ function Invoke-GitPushWithAnimation {
     $process.WaitForExit()
     Write-Progress -Activity "Git Push" -Completed
 
-    $stdout = $stdoutBuilder.ToString().TrimEnd()
-    $stderr = $stderrBuilder.ToString().TrimEnd()
+    $stdout = $stdoutTask.Result.TrimEnd()
+    $stderr = $stderrTask.Result.TrimEnd()
 
     if (-not [string]::IsNullOrWhiteSpace($stdout)) {
         Write-Host $stdout
