@@ -30,21 +30,44 @@ function Invoke-GitPushWithAnimation {
     $frames = @("|", "/", "-", "\")
     $index = 0
     $percent = 0
+    $stdoutFile = [System.IO.Path]::GetTempFileName()
+    $stderrFile = [System.IO.Path]::GetTempFileName()
 
-    $process = Start-Process -FilePath "git" -ArgumentList @("push", "--progress", $Remote, $TargetBranch) -NoNewWindow -PassThru
+    try {
+        $process = Start-Process -FilePath "git" `
+            -ArgumentList @("push", "--progress", $Remote, $TargetBranch) `
+            -NoNewWindow `
+            -RedirectStandardOutput $stdoutFile `
+            -RedirectStandardError $stderrFile `
+            -PassThru
 
-    while (-not $process.HasExited) {
-        $frame = $frames[$index % $frames.Count]
-        Write-Progress -Activity "Git Push" -Status "$frame Pushing commits to $Remote/$TargetBranch" -PercentComplete $percent
-        Start-Sleep -Milliseconds 120
-        $index++
-        $percent = ($percent + 3) % 100
+        while (-not $process.HasExited) {
+            $frame = $frames[$index % $frames.Count]
+            Write-Progress -Activity "Git Push" -Status "$frame Pushing commits to $Remote/$TargetBranch" -PercentComplete $percent
+            Start-Sleep -Milliseconds 120
+            $index++
+            $percent = ($percent + 3) % 100
+        }
+
+        $process.WaitForExit()
+        Write-Progress -Activity "Git Push" -Completed
+
+        $stdout = Get-Content -Raw $stdoutFile
+        $stderr = Get-Content -Raw $stderrFile
+
+        if (-not [string]::IsNullOrWhiteSpace($stdout)) {
+            Write-Host $stdout.TrimEnd()
+        }
+        if (-not [string]::IsNullOrWhiteSpace($stderr)) {
+            Write-Host $stderr.TrimEnd()
+        }
+
+        if ($process.ExitCode -ne 0) {
+            throw "git push $Remote $TargetBranch failed with exit code $($process.ExitCode)."
+        }
     }
-
-    Write-Progress -Activity "Git Push" -Completed
-
-    if ($process.ExitCode -ne 0) {
-        throw "git push $Remote $TargetBranch failed."
+    finally {
+        Remove-Item -ErrorAction SilentlyContinue $stdoutFile, $stderrFile
     }
 }
 
