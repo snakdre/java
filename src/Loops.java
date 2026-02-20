@@ -10,7 +10,6 @@ public class Loops {
     }
     public static boolean isPrime(int wholeNumber){
 
-
         return true;
     }
 
