@@ -19,6 +19,35 @@ function Invoke-Git {
     }
 }
 
+function Invoke-GitPushWithAnimation {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Remote,
+        [Parameter(Mandatory = $true)]
+        [string]$TargetBranch
+    )
+
+    $frames = @("|", "/", "-", "\")
+    $index = 0
+    $percent = 0
+
+    $process = Start-Process -FilePath "git" -ArgumentList @("push", "--progress", $Remote, $TargetBranch) -NoNewWindow -PassThru
+
+    while (-not $process.HasExited) {
+        $frame = $frames[$index % $frames.Count]
+        Write-Progress -Activity "Git Push" -Status "$frame Pushing commits to $Remote/$TargetBranch" -PercentComplete $percent
+        Start-Sleep -Milliseconds 120
+        $index++
+        $percent = ($percent + 3) % 100
+    }
+
+    Write-Progress -Activity "Git Push" -Completed
+
+    if ($process.ExitCode -ne 0) {
+        throw "git push $Remote $TargetBranch failed."
+    }
+}
+
 $insideRepo = (& git rev-parse --is-inside-work-tree 2>$null)
 if ($LASTEXITCODE -ne 0 -or $insideRepo.Trim() -ne "true") {
     throw "Run this script from inside a git repository."
@@ -44,5 +73,5 @@ if (-not [string]::IsNullOrWhiteSpace(($status -join ""))) {
     Write-Host "No local changes to commit."
 }
 
-Invoke-Git -Args @("push", "origin", $Branch)
+Invoke-GitPushWithAnimation -Remote "origin" -TargetBranch $Branch
 Write-Host "Push complete on branch '$Branch'."
