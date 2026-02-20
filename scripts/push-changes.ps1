@@ -30,44 +30,61 @@ function Invoke-GitPushWithAnimation {
     $frames = @("|", "/", "-", "\")
     $index = 0
     $percent = 0
-    $stdoutFile = [System.IO.Path]::GetTempFileName()
-    $stderrFile = [System.IO.Path]::GetTempFileName()
+    $stdoutBuilder = New-Object System.Text.StringBuilder
+    $stderrBuilder = New-Object System.Text.StringBuilder
 
-    try {
-        $process = Start-Process -FilePath "git" `
-            -ArgumentList @("push", "--progress", $Remote, $TargetBranch) `
-            -NoNewWindow `
-            -RedirectStandardOutput $stdoutFile `
-            -RedirectStandardError $stderrFile `
-            -PassThru
+    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $startInfo.FileName = "git"
+    $startInfo.Arguments = "push --progress $Remote $TargetBranch"
+    $startInfo.UseShellExecute = $false
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    $startInfo.CreateNoWindow = $true
 
-        while (-not $process.HasExited) {
-            $frame = $frames[$index % $frames.Count]
-            Write-Progress -Activity "Git Push" -Status "$frame Pushing commits to $Remote/$TargetBranch" -PercentComplete $percent
-            Start-Sleep -Milliseconds 120
-            $index++
-            $percent = ($percent + 3) % 100
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $startInfo
+
+    $process.add_OutputDataReceived({
+        param($sender, $e)
+        if ($null -ne $e.Data) {
+            [void]$stdoutBuilder.AppendLine($e.Data)
         }
+    })
 
-        $process.WaitForExit()
-        Write-Progress -Activity "Git Push" -Completed
-
-        $stdout = Get-Content -Raw $stdoutFile
-        $stderr = Get-Content -Raw $stderrFile
-
-        if (-not [string]::IsNullOrWhiteSpace($stdout)) {
-            Write-Host $stdout.TrimEnd()
+    $process.add_ErrorDataReceived({
+        param($sender, $e)
+        if ($null -ne $e.Data) {
+            [void]$stderrBuilder.AppendLine($e.Data)
         }
-        if (-not [string]::IsNullOrWhiteSpace($stderr)) {
-            Write-Host $stderr.TrimEnd()
-        }
+    })
 
-        if ($process.ExitCode -ne 0) {
-            throw "git push $Remote $TargetBranch failed with exit code $($process.ExitCode)."
-        }
+    [void]$process.Start()
+    $process.BeginOutputReadLine()
+    $process.BeginErrorReadLine()
+
+    while (-not $process.HasExited) {
+        $frame = $frames[$index % $frames.Count]
+        Write-Progress -Activity "Git Push" -Status "$frame Pushing commits to $Remote/$TargetBranch" -PercentComplete $percent
+        Start-Sleep -Milliseconds 120
+        $index++
+        $percent = ($percent + 3) % 100
     }
-    finally {
-        Remove-Item -ErrorAction SilentlyContinue $stdoutFile, $stderrFile
+
+    $process.WaitForExit()
+    Write-Progress -Activity "Git Push" -Completed
+
+    $stdout = $stdoutBuilder.ToString().TrimEnd()
+    $stderr = $stderrBuilder.ToString().TrimEnd()
+
+    if (-not [string]::IsNullOrWhiteSpace($stdout)) {
+        Write-Host $stdout
+    }
+    if (-not [string]::IsNullOrWhiteSpace($stderr)) {
+        Write-Host $stderr
+    }
+
+    if ($process.ExitCode -ne 0) {
+        throw "git push $Remote $TargetBranch failed with exit code $($process.ExitCode)."
     }
 }
 
