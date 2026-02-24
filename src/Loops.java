@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Loops {
 
     public static void interestCalculation(double amount){
@@ -109,12 +111,78 @@ public class Loops {
         return reverse==endCompare;
         }
     public static boolean hasSharedDigit(int n1, int n2){
-
+        if(n1<10 || n1>99 || n2<10 || n2>99){
+            System.out.println("Invalid input");
+            return false;
+        }
+        int temp2 = n2; //loading the value in a temp
+        while(n1 > 0){
+            int digit = n1 % 10; //get the last digit
+            n1 /= 10; //reset the number
+            n2= temp2; //reloading the value of the number 2
+            while(n2 > 0){
+                int digit2 = n2 % 10;
+                if(digit == digit2){
+                    return true;
+                }
+                n2 /= 10;
+            }
+        }
+        return false;
     }
+    public static boolean isValid(int n) {
+        if(n<10 || n>1000){
+            return false;
+        }
+        return true;
+    }
+    public static boolean hasSameLastDigit(int n1, int n2, int n3){
+        if(isValid(n1) && isValid(n2) && isValid(n3)){
+            return n2 % 10 == n3 % 10 || n1 % 10 == n2 % 10 || n1 % 10 == n3 % 10;
+        }
+        return false;
+    }
+    public static void printFactors(int number){
+        if(number<1){
+            System.out.println("Invalid Value");
+        }
+        String factors = "";
+        for(int i=1; i<=number; i++){
+            if(number % i == 0){
+                factors = factors + i + " ";
+            }
+        }
+        System.out.println(factors);
+    }
+    public static int getGreatestCommonDivisor(int n1, int n2){
+        if(n1<10 || n2<10){
+            return -1;
+        }
+        int biggestFactor1 = 0;
+        for(int i=1; i<=n1||i<=n2; i++){
+            if(n1 % i == 0 && n2 % i == 0){
+                biggestFactor1 = i;
 
+            }
+        }
+        return biggestFactor1;
+    }
+    public static boolean isPerfectNumber(int number){
+        if(number<1){
+            return false;
+        }
+        int factors = 0;
+        for(int i=1; i<number; i++){
+            if(number % i == 0){
+                factors+=i;
+            }
+        }
+        return factors == number;
+    }
     static void main(String[] args) {
 
-        System.out.print(getEvenDigitSum(123456789));
+        System.out.println(isPerfectNumber(-1));
+
     }
 
 }
