@@ -179,10 +179,79 @@ public class Loops {
         }
         return factors == number;
     }
+    /*public static String numberToWords(int number){
+        String numbers = "";
+        while(Math.abs(number) > 0){
+            int digit = number % 10;
+            number = number / 10;
+            numbers =  switch(digit){
+                case 0 -> "Zero";
+                case 1 -> "One";
+                case 2 -> "Two";
+                case 3 -> "Three";
+                case 4 -> "Four";
+                case 5 -> "Five";
+                case 6 -> "Six";
+                case 7 -> "Seven";
+                case 8 -> "Eight";
+                default -> "Nine";
+            } + " ";
+            numbers
+
+        }
+
+    }*/
+    public static int getDigitCount(int number){
+        if(number<0){
+            return -1;
+        }
+        int digits = 0;
+        while(number > 0){
+            number /= 10;
+            digits++;
+        }
+        return digits;
+    }
+    public static int reverse(int number){
+        int reversed = 0;
+        int endCompare = number;
+        while(Math.abs(number) > 0){
+            reversed = reversed * 10 + number % 10;;
+            number = number/10;
+        }
+        return reversed;
+    }
+    public static int getLargestPrime(int number){
+        if(number <= 2){
+            return (number);
+        }
+        for(int divisor=2; divisor < number; divisor++){
+            if(number % divisor == 0){
+                return number;
+            }
+        }
+        return -1;
+    }
+    public static void displyValidInteger(){
+        boolean valid = false;
+        Scanner scanner = new Scanner(System.in);
+        int counter = 1;
+        int sum = 0;
+        while(counter<=5){
+            try{
+                System.out.println("Enter number: " + counter);
+                //System.out.println("You have entered: " + Integer.parseInt(scanner.nextLine()));
+                counter++;
+                sum+=Integer.parseInt(scanner.nextLine());
+            }catch(NumberFormatException e) {
+                System.out.println("Please enter a valid number");
+                break;
+                }
+            }
+        System.out.println("The sum of numbers you have entered is: " + sum);
+        }
     static void main(String[] args) {
-
-        System.out.println(isPerfectNumber(-1));
-
+        displyValidInteger();
     }
 
 }
