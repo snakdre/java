@@ -233,7 +233,6 @@ public class Loops {
         return -1;
     }
     public static void displyValidInteger(){
-        boolean valid = false;
         Scanner scanner = new Scanner(System.in);
         int counter = 1;
         int sum = 0;
@@ -249,9 +248,57 @@ public class Loops {
                 }
             }
         System.out.println("The sum of numbers you have entered is: " + sum);
+    }
+    public static void minMax(){
+        Scanner scanner = new Scanner(System.in);
+        do{
+            int numberEntered = 0;
+            int min = 0;
+            int max = 0;
+            try{
+                System.out.print("Enter any number or any character to quit: ");
+                //System.out.println("You have entered: " + Integer.parseInt(scanner.nextLine()));
+                numberEntered=Integer.parseInt(scanner.nextLine());
+            }catch(NumberFormatException e) {
+                System.out.println("Exiting...");
+                break;
+            }
+            if (numberEntered < max) min = numberEntered;
+            if (numberEntered > min) max = numberEntered;
+            System.out.println("The minimum numbers is " + min + " and the maximum number is " + max);
+        }while(true);
+
+    }
+    public static void inputThenPrintSumAndAverage(){
+        Scanner scanner = new Scanner(System.in);
+        double sum = 0;
+        double avg = 0;
+        int loopCount = 0;
+        do{
+            int numberEntered = 0;
+            try{
+                System.out.print("Enter any number or any character to quit: ");
+                numberEntered=Integer.parseInt(scanner.nextLine());
+                sum+=numberEntered;
+                loopCount++;
+            }catch(NumberFormatException nfe) {
+                break;
+            }
+            if(loopCount==4){
+                avg = sum/loopCount;
+                break;
+            }
+        }while(true);
+            System.out.println("SUM = " + sum + " AVG = " + avg);
+    }
+    public static int getBucketCount(double height,double width,double areaPerBucket,int extraBuckets){
+        if(areaPerBucket<=0 || extraBuckets<0 || width<=0 || height<=0){
+            return -1;
         }
+        return (int)(((height*width)/(areaPerBucket*extraBuckets)));
+    }
     static void main(String[] args) {
-        displyValidInteger();
+        System.out.println(getBucketCount(2.75,3.25,2.5,1));
     }
 
 }
