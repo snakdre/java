@@ -1,9 +1,13 @@
+<<<<<<< Updated upstream
 import java.util.Scanner;
 
 public class Loops {
+=======
+class Loops {
+>>>>>>> Stashed changes
 
     public static void interestCalculation(double amount){
-        double interestDue = 0.0;
+        double interestDue;
 
         for(double rate=7.5; rate <=10; rate+=.25 ){
             interestDue = amount * (rate/100);
@@ -50,6 +54,7 @@ public class Loops {
         return sum;
     }
 
+<<<<<<< Updated upstream
     public static boolean isEven(int number){
         return (number % 2 == 0) && number > 0;
     }
@@ -299,6 +304,10 @@ public class Loops {
     }
     static void main(String[] args) {
         System.out.println(getBucketCount(2.75,3.25,2.5,1));
+=======
+    static void main() {
+        sumOf3and5();
+>>>>>>> Stashed changes
     }
 
 }

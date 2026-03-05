@@ -27,9 +27,9 @@ public class Switches {
                 if ( number < 0){
                     System.out.println(number+ " is a negative number.");
                 }
-                else System.out.println(number+ " is a higher than 9.");;
+                else System.out.println(number+ " is a higher than 9.");
             }
-        };
+        }
     }
 
     public static boolean isLeapYear(int year){
