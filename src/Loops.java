@@ -1,10 +1,10 @@
-<<<<<<< Updated upstream
+
 import java.util.Scanner;
 
 public class Loops {
-=======
+
 class Loops {
->>>>>>> Stashed changes
+
 
     public static void interestCalculation(double amount){
         double interestDue;
@@ -54,7 +54,7 @@ class Loops {
         return sum;
     }
 
-<<<<<<< Updated upstream
+
     public static boolean isEven(int number){
         return (number % 2 == 0) && number > 0;
     }
@@ -304,12 +304,10 @@ class Loops {
     }
     static void main(String[] args) {
         System.out.println(getBucketCount(2.75,3.25,2.5,1));
-=======
-    static void main() {
-        sumOf3and5();
->>>>>>> Stashed changes
-    }
 
+        static void main() {
+        sumOf3and5();
+    }
 }
 
 /*public static void  main(String[] args) {
