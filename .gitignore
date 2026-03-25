@@ -1,3 +1,23 @@
+### Java ###
+*.class
+hs_err_pid*
+replay_pid*.txt
+
+### Build tools (add if you use Maven/Gradle) ###
+target/
+build/
+.gradle/
+
+### Logs & temp ###
+*.log
+*.tmp
+*~
+
+### Secrets & local env (never commit) ###
+.env
+.env.*
+!.env.example
+
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
@@ -28,6 +48,12 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Windows ###
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
 .idea/
 
 *.iml
