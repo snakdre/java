@@ -13,6 +13,14 @@ public class Itenarary {
                 (Q)uit
                 """);
     }
+    public static void printSubMenu(){
+        System.out.println("""
+                Available Actions - Select word or letter:
+                (A)dd Stop
+                (R)emove Stop
+                (B)ack to Main Menu
+                """);
+    }
     public static LinkedList<Place> initialItenarary(){
         Place adelaide = new Place("Adelaide", 1373);
         Place aliceSprings = new Place("Alice Springs", 2771);
@@ -33,36 +41,71 @@ public class Itenarary {
             if(iterator.hasNext()) System.out.print(" ➜ ");
         }
     }
+    public static void listCities(LinkedList<Place> list){
+        for(Place place: list){
+            System.out.print(place.toString());
+        }
+    }
     public static void operation(LinkedList<Place> list, Place p , boolean isAdding){
         ListIterator<Place> iterator = list.listIterator();
-        while(iterator.hasNext()){
-            if(isAdding){
+        if(isAdding){
+            while(iterator.hasNext()){
                 if (p.getDistance() <= iterator.next().getDistance()){
                     iterator.previous();
-                    list.add(p);
+                    iterator.add(p);
+                    return;
                 }
             }
-            else{
-                if(p.getTown().equals(iterator.next().getTown())){
-                    iterator.previous();
-                    iterator.remove();
-                }
+            iterator.add(p);
+            return;
+        }
+
+        while(iterator.hasNext()){
+            if(p.getTown().equals(iterator.next().getTown())){
+                iterator.remove();
+                return;
             }
         }
-        iterator.add(p);
-        //list.sort(Comparator.comparingInt(Place::getDistance));
-        //adding
     }
     static void main() {
        LinkedList<Place> list = initialItenarary();
-       for(Place p : list){
-           System.out.println(p);
-       }
-        operation(list, new Place("Imaginaire", 5400), true);
-        for(Place p : list){
-            System.out.println(p);
+       Scanner sc = new Scanner(System.in);
+       boolean exit = true;
+       printMenu();
+        while(exit){
+            switch (sc.nextLine().toUpperCase(Locale.ROOT)) {
+                case "F":
+                    moving(list, true);
+                    break;
+                case "B":
+                    moving(list, false);
+                    break;
+                case "L":
+                    listCities(list);
+                    break;
+                case "M":
+                    printSubMenu();
+                    switch(sc.nextLine().toUpperCase(Locale.ROOT)){
+                        case "A":
+                            System.out.print("Enter your city: ");
+                            var town = sc.nextLine();
+                            System.out.print("Enter the city's distance: ");
+                            var distance = sc.nextInt();
+                            operation(list, new Place(town, distance), true);
+                        case "R":
+                            System.out.print("Enter your city: ");
+                            town = sc.nextLine();
+                            System.out.print("Enter the city's distance: ");
+                            distance = sc.nextInt();
+                            operation(list, new Place(town, distance), false);
+                        case "B":
+                    }
+                    break;
+                case "Q":
+                    exit = false;
+                    break;
+            }
         }
-        operation(list, new Place("Imaginaire", 5400), true);
 
     }
 }
